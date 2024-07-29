@@ -114,22 +114,22 @@ public class MPDS implements ModInitializer {
 				if (!Objects.equals(effdata = resultSet.getString("effect"), "")) {
 					List.of(effdata.split("&")).forEach(effcompound -> serverPlayNetworkHandler.sendPacket(new EntityStatusEffectS2CPacket(player.getId(), StatusEffectInstance.fromNbt( NbtCompound.CODEC.parse(JsonOps.INSTANCE, JsonParser.parseString(effcompound)).resultOrPartial(LOGGER::error).orElseThrow()))));
 				}
-				player.sendMessage(Text.translatable("success to load " + player.getName().getString() + "'s data!").formatted(Formatting.AQUA));
+				//player.sendMessage(Text.translatable("success to load " + player.getName().getString() + "'s data!").formatted(Formatting.AQUA));
 				LOGGER.info("success to load " + player.getName().getString() + "'s data!");
 			}else {
 				PreparedStatement addplayer = connection.prepareStatement("INSERT INTO " + TABLE_NAME + " (Name, uuid, sync) VALUES (?, ?, \"false\")");
 				addplayer.setString(1, player.getName().getString());
 				addplayer.setString(2, player.getUuid().toString());
 				addplayer.executeUpdate();
-				player.sendMessage(Text.translatable("CANNOT FIND " + player.getName().getString() + "'s DATA!").formatted(Formatting.RED));
-				player.sendMessage(Text.translatable("MAKE NEW ONE!").formatted(Formatting.RED));
+				//player.sendMessage(Text.translatable("CANNOT FIND " + player.getName().getString() + "'s DATA!").formatted(Formatting.RED));
+				//player.sendMessage(Text.translatable("MAKE NEW ONE!").formatted(Formatting.RED));
 				LOGGER.warn("CANNOT FIND " + player.getName().getString() + "'s DATA!");
 				LOGGER.warn("MAKE NEW ONE!");
 			}
 
 		} catch (SQLException | InterruptedException e) {
-			player.sendMessage(Text.translatable("THERE WERE SOME ERROR WHEN LOAD PLAYER DATA").formatted(Formatting.RED));
-			LOGGER.error("THERE WERE SOME ERROR WHEN LOAD PLAYER DATA:");
+			player.sendMessage(Text.translatable("There was an unexpected error loading player data").formatted(Formatting.RED));
+			LOGGER.error("There was an unexpected error loading player data:");
 			e.printStackTrace();
 		}
     }
