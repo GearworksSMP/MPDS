@@ -80,10 +80,13 @@ public class MPDS implements ModInitializer {
 			statement.setString(1, player.getUuid().toString());
 			ResultSet resultSet;
 			if ((resultSet = statement.executeQuery()).next()) {
-				while ("false".equals(resultSet.getString("sync"))) {
-					Thread.sleep(1000);
+				int count = 0;
+				// Sometimes this just hangs forever. It is to prevent issues but for testing it may be better to keep this
+				while (count < 20 && "false".equals(resultSet.getString("sync"))) {
+					Thread.sleep(100);
 					resultSet = statement.executeQuery();
 					resultSet.next();
+					count++;
 				}
 				PreparedStatement befalse = connection.prepareStatement("UPDATE " + TABLE_NAME +" SET sync=\"false\" WHERE uuid = ?");
 				befalse.setString(1, player.getUuid().toString());
@@ -116,7 +119,7 @@ public class MPDS implements ModInitializer {
 				}
 				//player.sendMessage(Text.translatable("success to load " + player.getName().getString() + "'s data!").formatted(Formatting.AQUA));
 				LOGGER.info("success to load " + player.getName().getString() + "'s data!");
-			}else {
+			} else {
 				PreparedStatement addplayer = connection.prepareStatement("INSERT INTO " + TABLE_NAME + " (Name, uuid, sync) VALUES (?, ?, \"false\")");
 				addplayer.setString(1, player.getName().getString());
 				addplayer.setString(2, player.getUuid().toString());
